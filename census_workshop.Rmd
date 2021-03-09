@@ -1,0 +1,68 @@
+---
+title: "Working with United States Census Data Using tidycensus"
+output: html_document
+---
+
+
+```{r, echo=FALSE,results=FALSE,message=FALSE}
+library(tidycensus)
+library(tidyverse)
+library(knitr)
+Sys.getenv("CENSUS_API_KEY")
+```
+
+```{r, eval=FALSE}
+library(tidycensus)
+library(tidyverse)
+census_api_key("YOUR API KEY GOES HERE")
+```
+
+## Inspect variables for Decennial Census
+```{r view variables}
+decennial_variables<-load_variables(2010,"sf1")
+View(decennial_variables)
+```
+
+```{r,echo=FALSE}
+kable(head(decennial_variables))
+```
+
+
+
+```{r, message=FALSE}
+state_population_2010<-get_decennial(geography = "state", 
+                                                  variables = "P001001", 
+                                                  year = 2010)
+View(state_population_2010)
+```
+
+
+```{r,echo=FALSE}
+kable(head(state_population_2010))
+```
+
+
+
+
+
+
+## Appendix 
+
+```{r}
+my_years<-c(2000,2010)
+
+
+
+multiyear<-map(
+  my_years,
+  ~get_decennial(geography = "state", 
+                 variables = c("P001001", "P002005"),
+                 output="wide",
+                 year =.)
+)
+
+names(multiyear)<-my_years
+multiyear
+multiyear[["2000"]]
+```
+
