@@ -28,7 +28,9 @@ kable(head(decennial_variables))
 ```
 
 
-## Calling data of interest
+## Calling and Manipulating Data using tidycensus and dplyr: Basics
+
+### Calling and Viewing Data
 
 Let's find out the population, by state, in 2010: 
 
@@ -59,6 +61,7 @@ View(CO_county_population_2010)
 kable(head(CO_county_population_2010))
 ```
 
+### Cleaning and Manipulating Data Using dplyr
 
 Let's clean up the table by removing the "variable" column, and renaming the "value" column as "Population", which we can do using functions from the "dplyr" package. 
 
@@ -77,10 +80,7 @@ View(CO_county_population_2010)
 kable(head(CO_county_population_2010))
 ```
 
-It's also possible to get multiple variables in a single table; let's add a field/column containing
-the rural population in each state in 2010, and order the dataset in descending order with respect to the
-rural population (i.e. the state with the largest rural population will appear as the first record in 
-the dataset):
+It's also possible to call multiple variables into a single table. To see this, let's add a field/column containing the rural population in each state in 2010 (as well as the total population in that year), and order the dataset in descending order with respect to the rural population (such that the state with the largest rural population will appear as the first record in the dataset):
 
 ```{r,message=FALSE,results=FALSE}
 state_pop_ruralpop_2010<-get_decennial(geography = "state", 
@@ -97,6 +97,28 @@ state_pop_ruralpop_2010
 ```{r,echo=FALSE}
 kable(head(state_pop_ruralpop_2010))
 ```
+
+Let's generate a new variable based on the variables we already have in the dataset. This variable will measure the percentage of each state's population that are rural residents (calculated by dividing the rural population by the total population, and multiplying by 100). We'll call this variable "rural_pct". We'll also resort the dataset, so that it's sorted in descending order with respect to the new "rural_pct" variable, instead of the actual number of rural residents:
+
+
+```{r}
+state_pop_ruralpop_2010<-
+  state_pop_ruralpop_2010 %>% mutate(rural_pct=(rural_population/total_population)*100) %>% 
+                              arrange(desc(rural_pct))
+  
+View(state_pop_ruralpop_2010)
+```
+
+```{r,echo=FALSE}
+kable(head(state_pop_ruralpop_2010))
+```
+
+
+
+
+##Visualization and mapping using ggplot and tmap
+
+Let's 
 
 
 ## Appendix 

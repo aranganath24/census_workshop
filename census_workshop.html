@@ -241,8 +241,10 @@ View(decennial_variables)</code></pre>
 </tbody>
 </table>
 </div>
-<div id="calling-data-of-interest" class="section level2">
-<h2>Calling data of interest</h2>
+<div id="calling-and-manipulating-data-using-tidycensus-and-dplyr-basics" class="section level2">
+<h2>Calling and Manipulating Data using tidycensus and dplyr: Basics</h2>
+<div id="calling-and-viewing-data" class="section level3">
+<h3>Calling and Viewing Data</h3>
 <p>Let’s find out the population, by state, in 2010:</p>
 <pre class="r"><code>state_population_2010&lt;-get_decennial(geography = &quot;state&quot;, 
                                                   variables = &quot;P001001&quot;, 
@@ -350,6 +352,9 @@ View(CO_county_population_2010)</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="cleaning-and-manipulating-data-using-dplyr" class="section level3">
+<h3>Cleaning and Manipulating Data Using dplyr</h3>
 <p>Let’s clean up the table by removing the “variable” column, and renaming the “value” column as “Population”, which we can do using functions from the “dplyr” package.</p>
 <pre class="r"><code>CO_county_population_2010&lt;-get_decennial(geography = &quot;county&quot;, 
                                          state=&quot;CO&quot;,
@@ -400,7 +405,7 @@ View(CO_county_population_2010)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>It’s also possible to get multiple variables in a single table; let’s add a field/column containing the rural population in each state in 2010, and order the dataset in descending order with respect to the rural population (i.e. the state with the largest rural population will appear as the first record in the dataset):</p>
+<p>It’s also possible to call multiple variables into a single table. To see this, let’s add a field/column containing the rural population in each state in 2010 (as well as the total population in that year), and order the dataset in descending order with respect to the rural population (such that the state with the largest rural population will appear as the first record in the dataset):</p>
 <pre class="r"><code>state_pop_ruralpop_2010&lt;-get_decennial(geography = &quot;state&quot;, 
                                           variables = c(&quot;P001001&quot;, &quot;P002005&quot;),
                                           output=&quot;wide&quot;,
@@ -457,6 +462,70 @@ state_pop_ruralpop_2010</code></pre>
 </tr>
 </tbody>
 </table>
+<p>Let’s generate a new variable based on the variables we already have in the dataset. This variable will measure the percentage of each state’s population that are rural residents (calculated by dividing the rural population by the total population, and multiplying by 100). We’ll call this variable “rural_pct”. We’ll also resort the dataset, so that it’s sorted in descending order with respect to the new “rural_pct” variable, instead of the actual number of rural residents:</p>
+<pre class="r"><code>state_pop_ruralpop_2010&lt;-
+  state_pop_ruralpop_2010 %&gt;% mutate(rural_pct=(rural_population/total_population)*100) %&gt;% 
+                              arrange(desc(rural_pct))
+  
+View(state_pop_ruralpop_2010)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="right">total_population</th>
+<th align="right">rural_population</th>
+<th align="right">rural_pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">23</td>
+<td align="left">Maine</td>
+<td align="right">1328361</td>
+<td align="right">814819</td>
+<td align="right">61.34018</td>
+</tr>
+<tr class="even">
+<td align="left">50</td>
+<td align="left">Vermont</td>
+<td align="right">625741</td>
+<td align="right">382356</td>
+<td align="right">61.10451</td>
+</tr>
+<tr class="odd">
+<td align="left">54</td>
+<td align="left">West Virginia</td>
+<td align="right">1852994</td>
+<td align="right">950184</td>
+<td align="right">51.27831</td>
+</tr>
+<tr class="even">
+<td align="left">28</td>
+<td align="left">Mississippi</td>
+<td align="right">2967297</td>
+<td align="right">1503073</td>
+<td align="right">50.65462</td>
+</tr>
+<tr class="odd">
+<td align="left">30</td>
+<td align="left">Montana</td>
+<td align="right">989415</td>
+<td align="right">436401</td>
+<td align="right">44.10697</td>
+</tr>
+<tr class="even">
+<td align="left">05</td>
+<td align="left">Arkansas</td>
+<td align="right">2915918</td>
+<td align="right">1278329</td>
+<td align="right">43.83968</td>
+</tr>
+</tbody>
+</table>
+<p>##Visualization and mapping using ggplot and tmap</p>
+<p>Let’s</p>
+</div>
 </div>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
