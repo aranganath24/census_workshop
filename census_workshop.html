@@ -240,6 +240,9 @@ View(decennial_variables)</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
 <pre class="r"><code>state_population_2010&lt;-get_decennial(geography = &quot;state&quot;, 
                                                   variables = &quot;P001001&quot;, 
                                                   year = 2010)
@@ -296,67 +299,38 @@ View(state_population_2010)</code></pre>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
 <pre class="r"><code>my_years&lt;-c(2000,2010)
-
-
-
-multiyear&lt;-map(
+population_rural_2000_2010&lt;-map(
   my_years,
-  ~get_decennial(geography = &quot;state&quot;, 
+  ~(get_decennial(geography = &quot;state&quot;, 
                  variables = c(&quot;P001001&quot;, &quot;P002005&quot;),
                  output=&quot;wide&quot;,
-                 year =.)
-)</code></pre>
+                 year =.)) %&gt;% 
+      mutate(rural_pct=(P002005/P001001)*100) %&gt;% 
+      arrange(NAME)
+  )</code></pre>
 <pre><code>## Getting data from the 2000 decennial Census</code></pre>
 <pre><code>## Using Census Summary File 1</code></pre>
 <pre><code>## Getting data from the 2010 decennial Census</code></pre>
 <pre><code>## Using Census Summary File 1</code></pre>
-<pre class="r"><code>names(multiyear)&lt;-my_years
-multiyear</code></pre>
-<pre><code>## $`2000`
-## # A tibble: 52 x 4
-##    GEOID NAME       P001001 P002005
-##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;
-##  1 27    Minnesota  4919479 1429420
-##  2 49    Utah       2233169  262825
-##  3 08    Colorado   4301261  668076
-##  4 32    Nevada     1998257  169611
-##  5 29    Missouri   5595211 1711769
-##  6 31    Nebraska   1711263  517538
-##  7 34    New Jersey 8414350  475263
-##  8 50    Vermont     608827  376379
-##  9 01    Alabama    4447100 1981427
-## 10 13    Georgia    8186453 2322290
-## # … with 42 more rows
-## 
-## $`2010`
-## # A tibble: 52 x 4
-##    GEOID NAME         P001001 P002005
-##    &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt;
-##  1 01    Alabama      4779736 1957932
-##  2 02    Alaska        710231  241338
-##  3 04    Arizona      6392017  651358
-##  4 05    Arkansas     2915918 1278329
-##  5 06    California  37253956 1880350
-##  6 22    Louisiana    4533372 1215567
-##  7 21    Kentucky     4339367 1806024
-##  8 08    Colorado     5029196  696435
-##  9 09    Connecticut  3574097  429155
-## 10 10    Delaware      897934  149985
-## # … with 42 more rows</code></pre>
-<pre class="r"><code>multiyear[[&quot;2000&quot;]]</code></pre>
-<pre><code>## # A tibble: 52 x 4
-##    GEOID NAME       P001001 P002005
-##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;
-##  1 27    Minnesota  4919479 1429420
-##  2 49    Utah       2233169  262825
-##  3 08    Colorado   4301261  668076
-##  4 32    Nevada     1998257  169611
-##  5 29    Missouri   5595211 1711769
-##  6 31    Nebraska   1711263  517538
-##  7 34    New Jersey 8414350  475263
-##  8 50    Vermont     608827  376379
-##  9 01    Alabama    4447100 1981427
-## 10 13    Georgia    8186453 2322290
+<pre class="r"><code>names(population_rural_2000_2010)&lt;-my_years
+
+joined_ds&lt;-full_join(population_rural_2000_2010[[&quot;2000&quot;]],population_rural_2000_2010[[&quot;2010&quot;]],by=&quot;NAME&quot;) %&gt;% 
+           mutate(pct_change=rural_pct.y-rural_pct.x) %&gt;% 
+           select(NAME,pct_change)
+joined_ds</code></pre>
+<pre><code>## # A tibble: 52 x 2
+##    NAME                 pct_change
+##    &lt;chr&gt;                     &lt;dbl&gt;
+##  1 Alabama                  -3.59 
+##  2 Alaska                   -0.421
+##  3 Arizona                  -1.64 
+##  4 Arkansas                 -3.64 
+##  5 California               -0.509
+##  6 Colorado                 -1.68 
+##  7 Connecticut              -0.252
+##  8 Delaware                 -3.18 
+##  9 District of Columbia      0    
+## 10 Florida                  -1.88 
 ## # … with 42 more rows</code></pre>
 </div>
 

@@ -28,7 +28,7 @@ kable(head(decennial_variables))
 ```
 
 
-
+## 
 ```{r, message=FALSE}
 state_population_2010<-get_decennial(geography = "state", 
                                                   variables = "P001001", 
@@ -50,19 +50,21 @@ kable(head(state_population_2010))
 
 ```{r}
 my_years<-c(2000,2010)
-
-
-
-multiyear<-map(
+population_rural_2000_2010<-map(
   my_years,
-  ~get_decennial(geography = "state", 
+  ~(get_decennial(geography = "state", 
                  variables = c("P001001", "P002005"),
                  output="wide",
-                 year =.)
-)
+                 year =.)) %>% 
+      mutate(rural_pct=(P002005/P001001)*100) %>% 
+      arrange(NAME)
+  )
 
-names(multiyear)<-my_years
-multiyear
-multiyear[["2000"]]
+names(population_rural_2000_2010)<-my_years
+
+joined_ds<-full_join(population_rural_2000_2010[["2000"]],population_rural_2000_2010[["2010"]],by="NAME") %>% 
+           mutate(pct_change=rural_pct.y-rural_pct.x) %>% 
+           select(NAME,pct_change)
+joined_ds
 ```
 
