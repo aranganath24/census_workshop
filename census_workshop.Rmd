@@ -28,7 +28,10 @@ kable(head(decennial_variables))
 ```
 
 
-## 
+## Calling data of interest
+
+Let's find out the population, by state, in 2010: 
+
 ```{r, message=FALSE}
 state_population_2010<-get_decennial(geography = "state", 
                                                   variables = "P001001", 
@@ -41,9 +44,59 @@ View(state_population_2010)
 kable(head(state_population_2010))
 ```
 
+We can adjust the geography and year parameters; let's say we want the population distribution 
+across CO counties in the year 2010:
+
+```{r,message=FALSE}
+CO_county_population_2010<-get_decennial(geography = "county", 
+                                         state="CO",
+                                         variables = "P001001", 
+                                         year = 2010)
+View(CO_county_population_2010)
+```
+
+```{r,echo=FALSE}
+kable(head(CO_county_population_2010))
+```
 
 
+Let's clean up the table by removing the "variable" column, and renaming the "value" column as "Population", which we can do using functions from the "dplyr" package. 
 
+```{r, message=FALSE}
+CO_county_population_2010<-get_decennial(geography = "county", 
+                                         state="CO",
+                                         variables = "P001001", 
+                                         year = 2000) %>% 
+                           mutate(variable=NULL) %>% 
+                           rename(population=value)
+
+View(CO_county_population_2010)
+```
+
+```{r,echo=FALSE}
+kable(head(CO_county_population_2010))
+```
+
+It's also possible to get multiple variables in a single table; let's add a field/column containing
+the rural population in each state in 2010, and order the dataset in descending order with respect to the
+rural population (i.e. the state with the largest rural population will appear as the first record in 
+the dataset):
+
+```{r,message=FALSE,results=FALSE}
+state_pop_ruralpop_2010<-get_decennial(geography = "state", 
+                                          variables = c("P001001", "P002005"),
+                                          output="wide",
+                                          year = 2010) %>% 
+                                          rename(total_population=P001001, rural_population=P002005) %>% 
+                                          arrange(desc(rural_population))
+
+state_pop_ruralpop_2010
+
+```
+
+```{r,echo=FALSE}
+kable(head(state_pop_ruralpop_2010))
+```
 
 
 ## Appendix 

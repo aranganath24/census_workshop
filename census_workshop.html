@@ -241,8 +241,9 @@ View(decennial_variables)</code></pre>
 </tbody>
 </table>
 </div>
-<div id="section" class="section level2">
-<h2></h2>
+<div id="calling-data-of-interest" class="section level2">
+<h2>Calling data of interest</h2>
+<p>Let’s find out the population, by state, in 2010:</p>
 <pre class="r"><code>state_population_2010&lt;-get_decennial(geography = &quot;state&quot;, 
                                                   variables = &quot;P001001&quot;, 
                                                   year = 2010)
@@ -292,6 +293,167 @@ View(state_population_2010)</code></pre>
 <td align="left">Louisiana</td>
 <td align="left">P001001</td>
 <td align="right">4533372</td>
+</tr>
+</tbody>
+</table>
+<p>We can adjust the geography and year parameters; let’s say we want the population distribution across CO counties in the year 2010:</p>
+<pre class="r"><code>CO_county_population_2010&lt;-get_decennial(geography = &quot;county&quot;, 
+                                         state=&quot;CO&quot;,
+                                         variables = &quot;P001001&quot;, 
+                                         year = 2010)
+View(CO_county_population_2010)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="left">variable</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">08023</td>
+<td align="left">Costilla County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">3524</td>
+</tr>
+<tr class="even">
+<td align="left">08025</td>
+<td align="left">Crowley County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">5823</td>
+</tr>
+<tr class="odd">
+<td align="left">08027</td>
+<td align="left">Custer County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">4255</td>
+</tr>
+<tr class="even">
+<td align="left">08029</td>
+<td align="left">Delta County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">30952</td>
+</tr>
+<tr class="odd">
+<td align="left">08031</td>
+<td align="left">Denver County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">600158</td>
+</tr>
+<tr class="even">
+<td align="left">08035</td>
+<td align="left">Douglas County, Colorado</td>
+<td align="left">P001001</td>
+<td align="right">285465</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s clean up the table by removing the “variable” column, and renaming the “value” column as “Population”, which we can do using functions from the “dplyr” package.</p>
+<pre class="r"><code>CO_county_population_2010&lt;-get_decennial(geography = &quot;county&quot;, 
+                                         state=&quot;CO&quot;,
+                                         variables = &quot;P001001&quot;, 
+                                         year = 2000) %&gt;% 
+                           mutate(variable=NULL) %&gt;% 
+                           rename(population=value)
+
+View(CO_county_population_2010)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="right">population</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">08001</td>
+<td align="left">Adams County, Colorado</td>
+<td align="right">363857</td>
+</tr>
+<tr class="even">
+<td align="left">08003</td>
+<td align="left">Alamosa County, Colorado</td>
+<td align="right">14966</td>
+</tr>
+<tr class="odd">
+<td align="left">08005</td>
+<td align="left">Arapahoe County, Colorado</td>
+<td align="right">487967</td>
+</tr>
+<tr class="even">
+<td align="left">08007</td>
+<td align="left">Archuleta County, Colorado</td>
+<td align="right">9898</td>
+</tr>
+<tr class="odd">
+<td align="left">08009</td>
+<td align="left">Baca County, Colorado</td>
+<td align="right">4517</td>
+</tr>
+<tr class="even">
+<td align="left">08011</td>
+<td align="left">Bent County, Colorado</td>
+<td align="right">5998</td>
+</tr>
+</tbody>
+</table>
+<p>It’s also possible to get multiple variables in a single table; let’s add a field/column containing the rural population in each state in 2010, and order the dataset in descending order with respect to the rural population (i.e. the state with the largest rural population will appear as the first record in the dataset):</p>
+<pre class="r"><code>state_pop_ruralpop_2010&lt;-get_decennial(geography = &quot;state&quot;, 
+                                          variables = c(&quot;P001001&quot;, &quot;P002005&quot;),
+                                          output=&quot;wide&quot;,
+                                          year = 2010) %&gt;% 
+                                          rename(total_population=P001001, rural_population=P002005) %&gt;% 
+                                          arrange(desc(rural_population))
+
+state_pop_ruralpop_2010</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="right">total_population</th>
+<th align="right">rural_population</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">48</td>
+<td align="left">Texas</td>
+<td align="right">25145561</td>
+<td align="right">3847522</td>
+</tr>
+<tr class="even">
+<td align="left">37</td>
+<td align="left">North Carolina</td>
+<td align="right">9535483</td>
+<td align="right">3233727</td>
+</tr>
+<tr class="odd">
+<td align="left">42</td>
+<td align="left">Pennsylvania</td>
+<td align="right">12702379</td>
+<td align="right">2711092</td>
+</tr>
+<tr class="even">
+<td align="left">39</td>
+<td align="left">Ohio</td>
+<td align="right">11536504</td>
+<td align="right">2546810</td>
+</tr>
+<tr class="odd">
+<td align="left">26</td>
+<td align="left">Michigan</td>
+<td align="right">9883640</td>
+<td align="right">2513683</td>
+</tr>
+<tr class="even">
+<td align="left">13</td>
+<td align="left">Georgia</td>
+<td align="right">9687653</td>
+<td align="right">2415502</td>
 </tr>
 </tbody>
 </table>
