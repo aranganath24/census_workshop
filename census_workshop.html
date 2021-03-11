@@ -523,6 +523,347 @@ View(state_pop_ruralpop_2010)</code></pre>
 </tr>
 </tbody>
 </table>
+<p>The dplyr package also makes it easy to filter datasets based on specific criteria, which we can then assign to a new object. For example, let’s say that we want to generate a new dataset that only includes states whose rural populations are greater than 40% of their overall populations. We’ll assign this new dataset to an object called “rural_pct_over40”:</p>
+<pre class="r"><code>rural_pct_over40&lt;-state_pop_ruralpop_2010 %&gt;% filter(rural_pct&gt;40)
+View(rural_pct_over40)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="right">total_population</th>
+<th align="right">rural_population</th>
+<th align="right">rural_pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">23</td>
+<td align="left">Maine</td>
+<td align="right">1328361</td>
+<td align="right">814819</td>
+<td align="right">61.34018</td>
+</tr>
+<tr class="even">
+<td align="left">50</td>
+<td align="left">Vermont</td>
+<td align="right">625741</td>
+<td align="right">382356</td>
+<td align="right">61.10451</td>
+</tr>
+<tr class="odd">
+<td align="left">54</td>
+<td align="left">West Virginia</td>
+<td align="right">1852994</td>
+<td align="right">950184</td>
+<td align="right">51.27831</td>
+</tr>
+<tr class="even">
+<td align="left">28</td>
+<td align="left">Mississippi</td>
+<td align="right">2967297</td>
+<td align="right">1503073</td>
+<td align="right">50.65462</td>
+</tr>
+<tr class="odd">
+<td align="left">30</td>
+<td align="left">Montana</td>
+<td align="right">989415</td>
+<td align="right">436401</td>
+<td align="right">44.10697</td>
+</tr>
+<tr class="even">
+<td align="left">05</td>
+<td align="left">Arkansas</td>
+<td align="right">2915918</td>
+<td align="right">1278329</td>
+<td align="right">43.83968</td>
+</tr>
+<tr class="odd">
+<td align="left">46</td>
+<td align="left">South Dakota</td>
+<td align="right">814180</td>
+<td align="right">352933</td>
+<td align="right">43.34828</td>
+</tr>
+<tr class="even">
+<td align="left">21</td>
+<td align="left">Kentucky</td>
+<td align="right">4339367</td>
+<td align="right">1806024</td>
+<td align="right">41.61953</td>
+</tr>
+<tr class="odd">
+<td align="left">01</td>
+<td align="left">Alabama</td>
+<td align="right">4779736</td>
+<td align="right">1957932</td>
+<td align="right">40.96318</td>
+</tr>
+<tr class="even">
+<td align="left">38</td>
+<td align="left">North Dakota</td>
+<td align="right">672591</td>
+<td align="right">269719</td>
+<td align="right">40.10149</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="student-exercise" class="section level3">
+<h3>Student Exercise</h3>
+<p>Create a dataset of Colorado counties that had a rural population that exceeded 50% of the county’s overall population in 2010, and sort the dataset in descending order with respect to the field containing information on the percentage of the county’s rural resident’s. Your final dataset should look something like this:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="left">NAME</th>
+<th align="right">total_population</th>
+<th align="right">rural_population</th>
+<th align="right">rural_pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">08023</td>
+<td align="left">Costilla County, Colorado</td>
+<td align="right">3524</td>
+<td align="right">3524</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08025</td>
+<td align="left">Crowley County, Colorado</td>
+<td align="right">5823</td>
+<td align="right">5823</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08027</td>
+<td align="left">Custer County, Colorado</td>
+<td align="right">4255</td>
+<td align="right">4255</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08033</td>
+<td align="left">Dolores County, Colorado</td>
+<td align="right">2064</td>
+<td align="right">2064</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08039</td>
+<td align="left">Elbert County, Colorado</td>
+<td align="right">23086</td>
+<td align="right">23086</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08047</td>
+<td align="left">Gilpin County, Colorado</td>
+<td align="right">5441</td>
+<td align="right">5441</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08053</td>
+<td align="left">Hinsdale County, Colorado</td>
+<td align="right">843</td>
+<td align="right">843</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08057</td>
+<td align="left">Jackson County, Colorado</td>
+<td align="right">1394</td>
+<td align="right">1394</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08061</td>
+<td align="left">Kiowa County, Colorado</td>
+<td align="right">1398</td>
+<td align="right">1398</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08073</td>
+<td align="left">Lincoln County, Colorado</td>
+<td align="right">5467</td>
+<td align="right">5467</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08079</td>
+<td align="left">Mineral County, Colorado</td>
+<td align="right">712</td>
+<td align="right">712</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08091</td>
+<td align="left">Ouray County, Colorado</td>
+<td align="right">4436</td>
+<td align="right">4436</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08093</td>
+<td align="left">Park County, Colorado</td>
+<td align="right">16206</td>
+<td align="right">16206</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08095</td>
+<td align="left">Phillips County, Colorado</td>
+<td align="right">4442</td>
+<td align="right">4442</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08111</td>
+<td align="left">San Juan County, Colorado</td>
+<td align="right">699</td>
+<td align="right">699</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08109</td>
+<td align="left">Saguache County, Colorado</td>
+<td align="right">6108</td>
+<td align="right">6108</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08103</td>
+<td align="left">Rio Blanco County, Colorado</td>
+<td align="right">6666</td>
+<td align="right">6666</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08113</td>
+<td align="left">San Miguel County, Colorado</td>
+<td align="right">7359</td>
+<td align="right">7359</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08115</td>
+<td align="left">Sedgwick County, Colorado</td>
+<td align="right">2379</td>
+<td align="right">2379</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08121</td>
+<td align="left">Washington County, Colorado</td>
+<td align="right">4814</td>
+<td align="right">4814</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08009</td>
+<td align="left">Baca County, Colorado</td>
+<td align="right">3788</td>
+<td align="right">3788</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08021</td>
+<td align="left">Conejos County, Colorado</td>
+<td align="right">8256</td>
+<td align="right">8256</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08017</td>
+<td align="left">Cheyenne County, Colorado</td>
+<td align="right">1836</td>
+<td align="right">1836</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="even">
+<td align="left">08019</td>
+<td align="left">Clear Creek County, Colorado</td>
+<td align="right">9088</td>
+<td align="right">9088</td>
+<td align="right">100.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">08049</td>
+<td align="left">Grand County, Colorado</td>
+<td align="right">14843</td>
+<td align="right">12260</td>
+<td align="right">82.59786</td>
+</tr>
+<tr class="even">
+<td align="left">08083</td>
+<td align="left">Montezuma County, Colorado</td>
+<td align="right">25535</td>
+<td align="right">17155</td>
+<td align="right">67.18230</td>
+</tr>
+<tr class="odd">
+<td align="left">08125</td>
+<td align="left">Yuma County, Colorado</td>
+<td align="right">10043</td>
+<td align="right">6519</td>
+<td align="right">64.91088</td>
+</tr>
+<tr class="even">
+<td align="left">08029</td>
+<td align="left">Delta County, Colorado</td>
+<td align="right">30952</td>
+<td align="right">19553</td>
+<td align="right">63.17201</td>
+</tr>
+<tr class="odd">
+<td align="left">08119</td>
+<td align="left">Teller County, Colorado</td>
+<td align="right">23350</td>
+<td align="right">14618</td>
+<td align="right">62.60385</td>
+</tr>
+<tr class="even">
+<td align="left">08105</td>
+<td align="left">Rio Grande County, Colorado</td>
+<td align="right">11982</td>
+<td align="right">7493</td>
+<td align="right">62.53547</td>
+</tr>
+<tr class="odd">
+<td align="left">08067</td>
+<td align="left">La Plata County, Colorado</td>
+<td align="right">51334</td>
+<td align="right">30774</td>
+<td align="right">59.94857</td>
+</tr>
+<tr class="even">
+<td align="left">08007</td>
+<td align="left">Archuleta County, Colorado</td>
+<td align="right">12084</td>
+<td align="right">7175</td>
+<td align="right">59.37603</td>
+</tr>
+<tr class="odd">
+<td align="left">08051</td>
+<td align="left">Gunnison County, Colorado</td>
+<td align="right">15324</td>
+<td align="right">8981</td>
+<td align="right">58.60741</td>
+</tr>
+<tr class="even">
+<td align="left">08055</td>
+<td align="left">Huerfano County, Colorado</td>
+<td align="right">6711</td>
+<td align="right">3768</td>
+<td align="right">56.14662</td>
+</tr>
+</tbody>
+</table>
 <p>##Visualization and mapping using ggplot and tmap</p>
 <p>Let’s</p>
 </div>

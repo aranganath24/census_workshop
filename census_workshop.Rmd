@@ -113,7 +113,35 @@ View(state_pop_ruralpop_2010)
 kable(head(state_pop_ruralpop_2010))
 ```
 
+The dplyr package also makes it easy to filter datasets based on specific criteria, which we can then assign to a new object. For example, let's say that we want to generate a new dataset that only includes states whose rural populations are greater than 40% of their overall populations. We'll assign this new dataset to an object called "rural_pct_over40":
 
+```{r}
+rural_pct_over40<-state_pop_ruralpop_2010 %>% filter(rural_pct>40)
+View(rural_pct_over40)
+```
+
+```{r,echo=FALSE}
+kable(rural_pct_over40)
+```
+
+### Student Exercise
+
+Create a dataset of Colorado counties that had a rural population that exceeded 50% of the county's overall population in 2010, and sort the dataset in descending order with respect to the field containing information on the percentage of the county's rural resident's. Your final dataset should look something like this:
+
+```{r,echo=FALSE,message=FALSE}
+rural_pct_over50_CO2010<-get_decennial(geography = "county",
+                                       state="CO",
+                                       variables = c("P001001", "P002005"),
+                                       output="wide",
+                                       year = 2010) %>% 
+                       mutate(variable=NULL) %>% 
+                       rename(total_population=P001001, rural_population=P002005) %>% 
+                       mutate(rural_pct=(rural_population/total_population)*100) %>% 
+                       filter(rural_pct>50) %>% 
+                       arrange(desc(rural_pct))
+
+kable(rural_pct_over50_CO2010)
+```
 
 
 ##Visualization and mapping using ggplot and tmap
