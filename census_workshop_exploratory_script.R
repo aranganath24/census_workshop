@@ -29,7 +29,9 @@ CO_county_population_2010<-get_decennial(geography = "county",
                                          variables = "P001001", 
                                          year = 2000) %>% 
                               mutate(variable=NULL) %>% 
-                            rename(population=value)
+                              rename(population=value)
+
+
 
 ##It's also possible to get multiple variables in a single table; let's add a field/column containing
 ##the rural population in each state in 2010:
@@ -45,6 +47,8 @@ state_population_rural_2010<-get_decennial(geography = "state",
 
 state_rural_pct_2010<-state_population_rural_2010 %>% mutate(rural_pct=(rural_population/total_population)*100)
 View(state_rural_pct_2010)
+
+##visualize here 
 
 ##Let's say we want to create a new dataset that only contains states where the rural population exceeded 40%
 
@@ -90,6 +94,81 @@ rural_change<-(full_join(state_population_rural_2000, state_population_rural_201
               select(NAME,population_total_2000,population_rural_2000,rural_pct_2000,population_total_2010,
               population_rural_2010,rural_pct_2010) %>% 
               mutate(rural_change=rural_pct_2010-rural_pct_2000)
+
+d<-rural_change %>%
+  ggplot(aes(x = rural_change, y = NAME)) + 
+  geom_point()
+
+rural_change %>%
+  ggplot(aes(x = rural_change, y = NAME)) + 
+  geom_point()+
+
+  
+  
+  
+  
+rural_change %>%
+  ggplot(aes(x = reorder(NAME,-rural_change), y=rural_change)) + 
+  geom_col()+
+  coord_flip()
+  
+basegraph<-rural_change %>%
+  ggplot(aes(x = reorder(NAME,rural_change), y=rural_change)) + 
+  geom_col()+
+  coord_flip()
+
+basegraph+labs(title="Rural Depopulation", x="State Name", y="Pct Change in Rural Population")+
+  theme(plot.title=element_text(hjust=0.5))
+
+my_years<-c(2000,2010)
+population_rural_2000_2010<-map(
+  my_years,
+  ~(get_decennial(geography = "state", 
+                  variables = c("P001001", "P002005"),
+                  output="wide",
+                  year =.)) %>% 
+    mutate(rural_pct=(P002005/P001001)*100) %>% 
+    arrange(NAME)
+)
+
+names(population_rural_2000_2010)<-my_years
+
+joined_ds<-st_join(population_rural_2000_2010[["2000"]],population_rural_2000_2010[["2010"]],by="NAME") %>% 
+           mutate(pct_change=rural_pct.y-rural_pct.x) %>% 
+           select(geometry,NAME,pct_change)
+joined_ds
+
+state_population_2010<-get_decennial(geography = "state", 
+                                     variables = "P001001", 
+                                     geometry=TRUE,
+                                     shift_geo = TRUE,
+                                     year = 2010)
+
+rural_depop_tomap<-full_join(state_population_2010,joined_ds,by="NAME")
+
+map4<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="pct_change", n=6,style="jenks",palette="BuGn", midpoint=TRUE)
+
+
+basegraph+theme(plot.title="Rural Depopulation"(hjust=0.5))
+
+
+
+
+
+
+geom
+
+ggplot2::reorder
+
+co_rural_counties<-get_decennial(geography = "county",
+                                 state="CO",
+                                 variables = c("P001001", "P002005"),
+                                 output="wide",
+                                 year = 2010) %>% 
+  mutate(variable=NULL) %>% 
+  rename(total_population=P001001, rural_population=P002005) %>% 
+  mutate(rural_pct=(rural_population/total_population)*100)
 
 ##see appendix
 
