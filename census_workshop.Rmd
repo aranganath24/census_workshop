@@ -8,6 +8,7 @@ output: html_document
 library(tidycensus)
 library(tidyverse)
 library(knitr)
+library(tmap)
 Sys.getenv("CENSUS_API_KEY")
 ```
 
@@ -177,8 +178,6 @@ rural_change<-full_join(population_rural_2000_2010[["2000"]],
 rural_change
 ```
 
-
-
 ```{r,fig.width=9,fig.height=7}
 basegraph<-rural_change %>%
   ggplot(aes(x = reorder(NAME,rural_pct_change), y=rural_pct_change)) + 
@@ -187,6 +186,16 @@ basegraph<-rural_change %>%
 
 basegraph+labs(title="Rural Depopulation", x="State Name", y="Pct Change in Rural Population")+
   theme(plot.title=element_text(hjust=0.5))
+```
+
+
+```{r}
+rural_depop_tomap<-full_join(state_population_2010,rural_change,by="NAME")
+
+map4<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="rural_pct_change", n=6,style="jenks",palette="BuGn", midpoint=TRUE)
+
+map4
 ```
 
 
