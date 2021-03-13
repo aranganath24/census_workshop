@@ -149,6 +149,20 @@ rural_depop_tomap<-full_join(state_population_2010,joined_ds,by="NAME")
 map4<-tm_shape(rural_depop_tomap)+
   tm_polygons(col="pct_change", n=6,style="jenks",palette="BuGn", midpoint=TRUE)
 
+map5<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="pct_change", breaks=c(-6,-4,-2,0,2),palette="pastel1", midpoint=TRUE)
+  
+map7<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="pct_change", breaks=c(-6,-4,-2,0,2),palette="YlGnBu", midpoint=TRUE)
+
+map8<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="pct_change", breaks=c(-6,-4, -2, 0, 1, 2),palette="YlGnBu", midpoint=TRUE)
+
+map2<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="pct_change", breaks=c(-6,-4, -2, 0, 1, 2),palette="YlGnBu", midpoint=TRUE)+
+  tm_layout(frame=FALSE, main.title="Percentage Point Change in Rural Population, By State", 
+            main.title.position="center",legend.outside=TRUE)
+
 
 basegraph+theme(plot.title="Rural Depopulation"(hjust=0.5))
 

@@ -192,11 +192,24 @@ basegraph+labs(title="Rural Depopulation", x="State Name", y="Pct Change in Rura
 ```{r}
 rural_depop_tomap<-full_join(state_population_2010,rural_change,by="NAME")
 
-map4<-tm_shape(rural_depop_tomap)+
+foundational_map<-tm_shape(rural_depop_tomap)+
   tm_polygons(col="rural_pct_change", n=6,style="jenks",palette="BuGn", midpoint=TRUE)
 
-map4
+foundational_map
 ```
+
+```{r}
+##custom breaks and title
+revised_map<-tm_shape(rural_depop_tomap)+
+  tm_polygons(col="rural_pct_change", breaks=c(-6,-4,-2, 0, 1, 2),palette="YlGnBu", midpoint=TRUE)+
+  tm_layout(frame=FALSE, main.title="Percentage Point Change\nin Rural Population, By State",  
+              main.title.position="left", legend.outside=TRUE)
+
+revised_map
+```
+
+## Additional Work with Dplyr and Visualization
+
 
 
 
