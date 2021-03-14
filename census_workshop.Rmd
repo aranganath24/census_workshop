@@ -239,7 +239,7 @@ median_age_CO_visualization<-
   median_age_CO %>%
   ggplot(aes(x = median_age, y = reorder(NAME, median_age))) + 
   geom_point()+
-  labs(title="Median Age by County, CO", x="County Name", y="Median Age")+
+  labs(title="Median Age by County, CO", x="Median Age", y="County Name")+
   theme(plot.title=element_text(hjust=0.5))
 
 median_age_CO_visualization
@@ -247,8 +247,7 @@ median_age_CO_visualization
 
 ```{r,fig.width=9,fig.height=7}
 median_age_CO_cleaned<-median_age_CO %>% 
-                       separate(NAME,c("County","State"),sep=",") %>% 
-                       mutate(County_Name=str_remove_all(County,"County"))
+                       mutate(County_Name=str_remove_all(NAME,"Colorado|,|County"))
 
 median_age_CO_cleaned_visualization<-
   median_age_CO_cleaned %>%
