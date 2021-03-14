@@ -208,9 +208,67 @@ revised_map<-tm_shape(rural_depop_tomap)+
 revised_map
 ```
 
+## Student Visualization Practice 
+
+Practice visualizing Census by doing ONE of the following: 1) make a map (using the tmap package) that shows county-level variation in the median age across the state of Colorado or 2) make a visualization (using the ggplot package) of state-level variation in the median age across the entire United States.
+
+### Option 1 Code 
+
+```{r, warning=FALSE,message=FALSE, results=FALSE}
+median_age_CO<- get_decennial(geography = "county",
+                              state="CO",
+                              variables = "P013001", 
+                              year = 2010,
+                              geometry = TRUE) %>% 
+                rename(median_age=value)
+```
+
+```{r, message=FALSE,warning=FALSE}
+median_age_CO_map<-tm_shape(median_age_CO)+
+  tm_polygons(col="median_age",breaks=c(30,35,40,45,50),palette="YlGnBu", midpoint=TRUE)+
+  tm_layout(frame=FALSE, main.title="Median Age by County,\nColorado",  
+              main.title.position="left", legend.outside=TRUE)
+
+median_age_CO_map
+```
+
+### Option 2 Code 
+
+```{r,fig.width=9,fig.height=7}
+median_age_CO_visualization<-
+  median_age_CO %>%
+  ggplot(aes(x = median_age, y = reorder(NAME, median_age))) + 
+  geom_point()+
+  labs(title="Median Age by County, CO", x="County Name", y="Median Age")+
+  theme(plot.title=element_text(hjust=0.5))
+
+median_age_CO_visualization
+```
+
+```{r,fig.width=9,fig.height=7}
+median_age_CO_cleaned<-median_age_CO %>% 
+                       separate(NAME,c("County","State"),sep=",") %>% 
+                       mutate(County_Name=str_remove_all(County,"County"))
+
+median_age_CO_cleaned_visualization<-
+  median_age_CO_cleaned %>%
+  ggplot(aes(x = median_age, y = reorder(County_Name, median_age))) + 
+  geom_point()+
+  labs(title="Median Age by County, CO", x="Median Age", y="County")+
+  theme(plot.title=element_text(hjust=0.5))
+
+median_age_CO_cleaned_visualization
+```
+
+
+
+
+## across the state of Colorado in the year 2010 OR 2) A visualization of county-level 
+
+
 ## Additional Work with Dplyr and Visualization
 
-
+##county median age map? 
 
 
 ## Appendix 
