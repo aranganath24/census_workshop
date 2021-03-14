@@ -220,17 +220,27 @@ median_age_CO<- get_decennial(geography = "county",
                               variables = "P013001", 
                               year = 2010,
                               geometry = TRUE) %>% 
-                rename(median_age=value)
+                rename(median_age=value) %>% 
+                relocate(NAME)
 ```
 
 ```{r, message=FALSE,warning=FALSE}
 median_age_CO_map<-tm_shape(median_age_CO)+
-  tm_polygons(col="median_age",breaks=c(30,35,40,45,50),palette="YlGnBu", midpoint=TRUE)+
-  tm_layout(frame=FALSE, main.title="Median Age by County,\nColorado",  
-              main.title.position="left", legend.outside=TRUE)
+                   tm_polygons(col="median_age",breaks=c(30,35,40,45,50),palette="YlGnBu", midpoint=TRUE)+
+                   tm_layout(frame=FALSE, main.title="Median Age by County,\nColorado",  
+                   main.title.position="left", legend.outside=TRUE)
 
 median_age_CO_map
 ```
+
+Making a Web Map
+
+```{r, message=FALSE, warning=FALSE}
+
+tmap_mode("view")
+median_age_CO_map
+```
+
 
 ### Option 2 Code 
 
