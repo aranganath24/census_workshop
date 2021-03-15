@@ -261,3 +261,63 @@ https://247wallst.com/special-report/2018/07/09/the-oldest-and-youngest-county-i
 http://lenkiefer.com/2016/05/22/population-growth-housing-supply-and-house-prices/
 
   https://www.businessinsider.com/youngest-and-oldest-counties-in-the-us-map-2016-6
+
+
+
+
+
+
+
+
+
+median_income<-get_acs(geography="county",
+                       variables="B19013_001",
+                       year=2019,
+                       geometry=TRUE,
+                       shift_geo=TRUE) %>% 
+  rename(median_income=estimate) %>% 
+  arrange(desc(median_income))
+
+highest_income_counties<-median_income %>% 
+  separate(NAME,c("County","State"),sep=",") %>% 
+  group_by(State) %>% 
+  arrange(desc(median_income)) %>% 
+  slice(1) %>% 
+  unite(NAME, c("County","State"), remove=FALSE, sep=",")
+
+
+highest_income_counties_viz<-highest_income_counties %>% 
+  ggplot()
+
+
+
+
+
+
+
+
+
+median_income<-get_acs(geography="county",
+                       variables="B19013_001",
+                       year=2019,
+                       geometry=TRUE,
+                       shift_geo=TRUE) %>% 
+  rename(median_income=estimate) %>% 
+  arrange(desc(median_income))
+
+highest_income_counties<-median_income %>% 
+  separate(NAME,c("County","State"),sep=",") %>% 
+  group_by(State) %>% 
+  arrange(desc(median_income)) %>% 
+  slice(1) %>% 
+  unite(NAME, c("County","State"), remove=FALSE, sep=",")
+
+
+highest_income_counties_viz<-highest_income_counties %>% 
+  ggplot(aes(x=median_income,y=reorder(NAME, median_income)))+
+  geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
+  geom_point(color = "red", size = 3)+
+  labs(title="County with Highest Median Income, by State",
+       y="",
+       x="Median Income Estimate from ACS (bars indicate margin of error)")
+

@@ -309,10 +309,11 @@ Let's say that we want to generate a table that contains the highest median-inco
 
 ```{r, results=FALSE}
 highest_income_counties<-median_income %>% 
-                         separate(NAME,c("County","State"),sep=",") %>% 
-                         group_by(State) %>% 
-                         arrange(desc(median_income)) %>% 
-                         slice(1)
+  separate(NAME,c("County","State"),sep=",") %>% 
+  group_by(State) %>% 
+  arrange(desc(median_income)) %>% 
+  slice(1) %>% 
+  unite(NAME, c("County","State"), remove=FALSE, sep=",")
 
 View(highest_income_counties)
 ```
@@ -321,9 +322,26 @@ View(highest_income_counties)
 kable(highest_income_counties) 
 ```
 
+If we want to visualize this information, we can incorporate the MOE for these estimates into the visualization, so that we can convey the uncertainty surrounding these median income estimates.
+
+```{r,fig.width=9,fig.height=7}
+highest_income_counties_viz<-highest_income_counties %>% 
+                             ggplot(aes(x=median_income,y=reorder(NAME, median_income)))+
+                             geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
+                             geom_point(color = "red", size = 3)+
+                                        labs(title="County with Highest Median Income, by State",
+                                        y="",
+                                        x="Median Income Estimate from ACS (bars indicate margin of error)")
+highest_income_counties_viz                                    
+```
 
 
 
+student exercise where they do same for the lowest
+
+correlation between income and election results
+
+correlation between health insurance and covid 
 
 
 
