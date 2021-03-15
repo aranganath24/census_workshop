@@ -270,7 +270,9 @@ median_age_CO_cleaned_visualization<-
 median_age_CO_cleaned_visualization
 ```
 
-## American Community Survey
+## American Community Survey 
+
+### Calling ACS Data
 
 To inspect the variable list for the ACS, use the "load variables" function. Let's say we want to work with the 5-year ACS ending in 2019: 
 
@@ -294,13 +296,36 @@ median_income<-get_acs(geography="county",
               rename(median_income=estimate) %>% 
               arrange(desc(median_income))
                
-
 View(median_income)
 ```
 
 ```{r,echo=FALSE}
 kable(head(median_income))
 ```
+
+### Manipulating and Visualizing ACS Data: dplyr's "group_by" and "slice" functions, and visualizing uncertainty using ggplot
+
+Let's say that we want to generate a table that contains the highest median-income county for each state. To do so, we will use dplyr's "group_by" and "slice" functions, after separating out the "Name" field in the existing table (which is in the form "County Name, State") into separate "County" and "State" fields:
+
+```{r, results=FALSE}
+highest_income_counties<-median_income %>% 
+                         separate(NAME,c("County","State"),sep=",") %>% 
+                         group_by(State) %>% 
+                         arrange(desc(median_income)) %>% 
+                         slice(1)
+
+View(highest_income_counties)
+```
+
+```{r}
+kable(highest_income_counties) 
+```
+
+
+
+
+
+
 
 
 ## across the state of Colorado in the year 2010 OR 2) A visualization of county-level 
