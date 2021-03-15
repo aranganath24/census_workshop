@@ -329,15 +329,39 @@ highest_income_counties_viz<-highest_income_counties %>%
                              ggplot(aes(x=median_income,y=reorder(NAME, median_income)))+
                              geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
                              geom_point(color = "red", size = 3)+
-                                        labs(title="County with Highest Median Income, by State",
-                                        y="",
-                                        x="Median Income Estimate from ACS (bars indicate margin of error)")
+                                 labs(title="County with Highest Median Income, by State",
+                                  y="",
+                                  x="Median Income Estimate from 5-year ACS\n(bars indicate margin of error)")+ 
+                             theme(plot.title=element_text(hjust=0.5))
+
 highest_income_counties_viz                                    
 ```
 
+Student Exercise: Generate a visualization of median income by county in Colorado, using the 2014-2018 ACS:
 
+```{r,fig.width=9,fig.height=9, message=FALSE}
+median_income_CO_2018<-get_acs(geography="county",
+                       state="CO",
+                       variables="B19013_001",
+                       year=2018) %>% 
+              rename(median_income=estimate) %>% 
+              arrange(desc(median_income))
 
-student exercise where they do same for the lowest
+highest_income_counties_CO_2018_viz<-
+                  median_income_CO_2018 %>% 
+                  mutate(County_Name=str_remove_all(NAME,"Colorado|,|County")) %>% 
+                  ggplot(aes(x=median_income,y=reorder(County_Name, median_income)))+
+                             geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
+                             geom_point(color = "blue", size = 3)+
+                                  labs(title="Median Income in Colorado, by County (2018)",
+                                  y="",
+                                  x="Median Income Estimate from 5 year ACS\n(Bars indicate margin of error)")+
+                             theme(plot.title=element_text(hjust=0.5))
+
+highest_income_counties_CO_2018_viz                       
+
+```
+
 
 correlation between income and election results
 
