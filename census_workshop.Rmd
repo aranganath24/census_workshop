@@ -442,9 +442,30 @@ medianincome_nodegree_bystate_viz<-median_income_nodegree %>%
 medianincome_nodegree_bystate_viz
 ```
 
+Colorado Covid Cases
 
+```{r, warning=FALSE, message=FALSE}
+setwd(setwd("~/Desktop"))
 
+co_covid<-read_csv("co_covid.csv") %>% 
+          mutate(GEOID=as.character(GEOID)) %>% 
+          mutate(GEOID=paste0("0",GEOID))
 
+View(co_covid)
+```
+
+```{r, echo=FALSE}
+kable(head(co_covid))
+```
+
+```{r}
+co_covid_medianincome<-inner_join(median_income, co_covid,by="GEOID")
+View(co_covid_medianincome)
+```
+
+```{r,echo=FALSE}
+kable(head(co_covid_medianincome))
+```
 
 
 
