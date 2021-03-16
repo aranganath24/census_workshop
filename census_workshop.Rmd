@@ -16,6 +16,8 @@ Sys.getenv("CENSUS_API_KEY")
 ```{r, eval=FALSE}
 library(tidycensus)
 library(tidyverse)
+library(tmap)
+library(sf)
 census_api_key("YOUR API KEY GOES HERE")
 ```
 
@@ -425,10 +427,32 @@ medianincome_nodegree_viz<-median_income_nodegree %>%
 medianincome_nodegree_viz
 ```
 
+```{r,fig.width=15,fig.height=10, warning=FALSE, message=FALSE}
+median_income_nodegree<-median_income_nodegree %>% 
+                        separate(NAME,c("County","State"),sep=",")
+
+medianincome_nodegree_bystate_viz<-median_income_nodegree %>% 
+                                   ggplot()+
+                                   geom_point(aes(x=no_degree_pct,y=median_income))+
+                                   geom_smooth(aes(x=no_degree_pct,y=median_income),method="lm")+
+                                   ylab("County Median Income")+
+                                   xlab("Pct No Degree")+
+                                   facet_wrap(~State)
+
+medianincome_nodegree_bystate_viz
+```
+
+
+
+
+
+
+
 correlation between income and election results
 
 correlation between health insurance and covid 
 
+faceting
 
 
 
