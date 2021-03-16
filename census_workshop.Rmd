@@ -365,43 +365,65 @@ Student Exercise: Make a nationwide map of median income by county
 Exploratory Correlations: Relationship Between County Median Income and County Share of Over-25 Population with Doctoral Degrees (5 Year ACS ending in 2018)
 
 ```{r}
-median_income<-get_acs(geography="county",
-                       variables="B19013_001",
-                       year=2019) %>% 
-              rename(median_income=estimate) %>% 
-              arrange(desc(median_income))
+education_vars<-c(Bachelors="B15003_022", Masters="B15003_023", Professional="B15003_024", 
+                  Doctorate="B15003_025") 
 
-doctoral_degrees_pct<-get_acs(geography="county",
-                          variables=c("B15003_025", "B15003_001"),
-                          output="wide",
-                          year=2018) %>% 
-                  rename(doctorate_holders_est=B15003_025E) %>% 
-                  rename(doctorate_holders_moe=B15003_025M) %>% 
-                  rename(over25_pop_est=B15003_001E) %>% 
-                  rename(over25_pop_moe=B15003_001M) %>% 
-                  mutate(pct_doctorate=(doctorate_holders_est/over25_pop_est)*100) %>% 
-                  arrange(desc(doctorate_holders_est))
+education_acs_2018<-get_acs(geography="county",
+                            variables=education_vars,
+                            summary_var="B15003_001")
 
-View(doctoral_degrees_pct)
-        
+View(education_acs_2018)
 ```
 
-```{r,echo=FALSE}
-kable(head(doctoral_degrees_pct))
+
+```{r, echo=FALSE}
+kable(head(education_acs_2018))
 ```
 
 
 ```{r}
-medianincome_doctorates_county<-full_join(median_income,doctoral_degrees_pct,by="GEOID")
-View(medianincome_doctorates_county)
+pct_less_than_BA<-education_acs_2018 %>% 
+                  group_by(GEOID) %>% 
+                  mutate(no_degree_pct=((summary_est-sum(estimate))/(summary_est)*100)) %>% 
+                  summarize(mean(no_degree_pct)) %>% 
+                  rename(no_degree_pct="mean(no_degree_pct)")
+
+View(pct_less_than_BA)
 ```
 
-```{r,echo=FALSE}
-kable(head(medianincome_doctorates_county))
+```{r, echo=FALSE}
+kable(head(pct_less_than_BA))
+```
+
+```{r}
+
+median_income<-get_acs(geography="county",
+                       variables="B19013_001",
+                       year=2018) %>% 
+                rename(median_income=estimate) %>% 
+                arrange(desc(median_income))
+
+median_income_nodegree<-full_join(median_income,pct_less_than_BA,by="GEOID")
+
+View(median_income_nodegree)
 ```
 
 
+```{r}
+kable(head(median_income_nodegree))
+```
 
+
+```{r}
+medianincome_nodegree_viz<-median_income_nodegree %>% 
+                           ggplot()+
+                           geom_point(aes(x=no_degree_pct,y=median_income))+
+                           geom_smooth(aes(x=no_degree_pct,y=median_income),method="lm")+
+                           ylab("Estimated County Median Income")+
+                           xlab("Estimated Percentage of Under-25 Population Without at least Bachelors Degree")
+
+medianincome_nodegree_viz
+```
 
 correlation between income and election results
 
