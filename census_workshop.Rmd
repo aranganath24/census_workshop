@@ -467,7 +467,8 @@ View(co_covid_medianincome)
 kable(head(co_covid_medianincome))
 ```
 
-```{r}
+```{r,fig.width=9,fig.height=9}
+
 co_covid_medianincome<-co_covid_medianincome %>% 
                        mutate(covid_pct=(County_Pos_Cases/County_Population)*100) 
 
