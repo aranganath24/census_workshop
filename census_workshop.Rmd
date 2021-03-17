@@ -467,6 +467,19 @@ View(co_covid_medianincome)
 kable(head(co_covid_medianincome))
 ```
 
+```{r}
+co_covid_medianincome<-co_covid_medianincome %>% 
+                       mutate(covid_pct=(County_Pos_Cases/County_Population)*100) 
+
+co_covid_medianincome_viz<-co_covid_medianincome %>% 
+                           ggplot()+
+                           geom_point(aes(x=median_income,y=covid_pct))+
+                           ylab("Pct of County Population Testing Positive for Covid")+
+                           xlab("County Median Income")
+
+co_covid_medianincome_viz
+                           
+```
 
 
 correlation between income and election results
