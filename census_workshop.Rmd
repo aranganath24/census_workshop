@@ -362,7 +362,27 @@ highest_income_counties_CO_2018_viz
 
 ```
 
-Student Exercise: Make a nationwide map of median income by county
+Student Exercise: Make an interactive nationwide map of median income by state in 2016
+
+```{r, message=FALSE, warning=FALSE, results=FALSE}
+
+median_income_2016_states<-get_acs(geography="state",
+                                     variables="B19013_001",
+                                     year=2016,
+                                     geometry=TRUE) %>% 
+                            rename(median_income=estimate) %>% 
+                            arrange(desc(median_income)) %>% 
+                            relocate(NAME)
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+median_income_map<-tm_shape(median_income_2016_states)+
+                   tm_polygons(col="median_income", n=6, style="fisher", palette="YlOrBr")
+tmap_mode("view")
+
+median_income_map
+```
 
 Exploratory Correlations: Relationship Between County Median Income and County Share of Over-25 Population with Doctoral Degrees (5 Year ACS ending in 2018)
 
