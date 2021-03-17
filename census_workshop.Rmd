@@ -469,55 +469,44 @@ kable(head(co_covid_medianincome))
 
 ```{r,fig.width=9,fig.height=9}
 
-co_covid_medianincome<-co_covid_medianincome %>% 
-                       mutate(covid_pct=(County_Pos_Cases/County_Population)*100) 
-
 co_covid_medianincome_viz<-co_covid_medianincome %>% 
                            ggplot()+
-                           geom_point(aes(x=median_income,y=covid_pct))+
-                           ylab("Pct of County Population Testing Positive for Covid")+
-                           xlab("County Median Income")
+                           geom_point(aes(x=median_income,y=County_Rate_Per_100_000))+
+                           ylab("County Covid+ Rate Per 100,000")+
+                           xlab("County Median Income, 2018 (ACS Estimate)")
 
 co_covid_medianincome_viz
-                           
+income_cases_corr<-cor.test(co_covid_medianincome$median_income, co_covid_medianincome$County_Rate_Per_100_000)
+income_cases_corr
 ```
 
-
-correlation between income and election results
-
-correlation between health insurance and covid 
-
-faceting
-
-
-
-## across the state of Colorado in the year 2010 OR 2) A visualization of county-level 
-
-
-## Additional Work with Dplyr and Visualization
-
-##county median age map? 
-
-
-## Appendix 
+Student exercise: Make a scatterplot of the percentage of Colorado counties' populations that are non-white and non-Hispanic (based on the 2015-2019 ACS) against their Covid positivity rates per 100,000
 
 ```{r}
-my_years<-c(2000,2010)
-population_rural_2000_2010<-map(
-  my_years,
-  ~(get_decennial(geography = "state", 
-                 variables = c("P001001", "P002005"),
-                 output="wide",
-                 year =.)) %>% 
-      mutate(rural_pct=(P002005/P001001)*100) %>% 
-      arrange(NAME)
-  )
+acs_2019_nonwhite_COcounties<-get_acs(geography="county",
+                                      state="CO",
+                                      variables="B03002_003",
+                                      summary_var = "B03002_001",
+                                      year=2019) %>% 
+                              mutate(white_pct=(estimate/summary_est)*100) %>% 
+                              mutate(nonwhite_pct=100-white_pct)
 
-names(population_rural_2000_2010)<-my_years
+co_covid_race<-inner_join(acs_2019_nonwhite_COcounties, co_covid,by="GEOID")
 
-joined_ds<-full_join(population_rural_2000_2010[["2000"]],population_rural_2000_2010[["2010"]],by="NAME") %>% 
-           mutate(pct_change=rural_pct.y-rural_pct.x) %>% 
-           select(NAME,pct_change)
-joined_ds
+co_covid_race_viz<-co_covid_race %>% 
+                   ggplot()+
+                   geom_point(aes(x=nonwhite_pct,y=County_Rate_Per_100_000))+
+                   ylab("County Covid+ Rate Per 100,000")+
+                   xlab("Non-White/Non-Hispanic Share of County Population, 2019 (ACS Estimate)")
+
+nonwhite_cases_corr<-cor.test(co_covid_race$nonwhite_pct, co_covid_race$County_Rate_Per_100_000)
+
+co_covid_race_viz
+nonwhite_cases_corr
+
+
 ```
+
+
+
 
