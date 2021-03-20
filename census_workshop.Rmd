@@ -53,7 +53,7 @@ kable(head(state_population_2010))
 ```
 
 We can adjust the geography and year parameters; let's say we want the population distribution 
-across CO counties in the year 2010:
+across Colorado counties in the year 2010, based on the 2010 decennial census:
 
 ```{r,message=FALSE}
 CO_county_population_2010<-get_decennial(geography = "county", 
@@ -69,13 +69,12 @@ kable(head(CO_county_population_2010))
 
 ### Cleaning and Manipulating Data Using dplyr
 
-Let's clean up the table by removing the "variable" column, and renaming the "value" column as "Population", which we can do using functions from the "dplyr" package. 
+Let's clean up the dataset of Colorado's 2010 population distribution with respect to counties that we just created; we'll remove the "variable" column, and rename the "value" column as "Population". We can perform these operations by calling functions from the "dplyr" package. In the following code, we are editing the `Co_county_population_2010` dataset (note that the changes on the right hand side of the assignment operator are being applied to the `CO_county_population_2010` dataset, and that we're not creating a new object). The first line of code following the assignment operator (the `<-` symbol) calls the `CO_county_population_2010` dataset, and establishes that the subsequent functional operations are being applied to this dataset. After calling the dataset of interest, we use the pipe operator ` %>% `  to indicate that we want the second line of code (beginning with `mutate`) to be applied to the dataset we called in the first line (the pipe operator can be translated into ordinary language as "and then", i.e. "take the 'CO_county_population' dataset and then apply the second line of code to this dataset"). 
+
+The `mutate` function is a dplyr function that can be used to create new variables in a dataset based on existing variables, as well as delete variables by setting the variable name to "NULL." Here, the variable we want to delete is named "variable", so we call the `mutate` function, and write `variable=NULL` in parentheses to delete the "variable" field in the `CO_county_population_2010` dataset. We then use the `%>%` operator once again to take the dataset that results after deleting the "variable" field, and then use the `rename` function to rename the existing "value" field as "population."
 
 ```{r, message=FALSE}
-CO_county_population_2010<-get_decennial(geography = "county", 
-                                         state="CO",
-                                         variables = "P001001", 
-                                         year = 2000) %>% 
+CO_county_population_2010<-CO_county_population_2010 %>% 
                            mutate(variable=NULL) %>% 
                            rename(population=value)
 
