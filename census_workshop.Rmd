@@ -22,6 +22,14 @@ census_api_key("YOUR API KEY GOES HERE")
 ```
 
 ## Inspect variables for Decennial Census
+
+When working with census data, it is important to precisely identify your variable(s) of interest using Census Bureau variable codes (which are required to call in the variables we want using the Census Bureau API). It is possible to find information on these variable codes in the Census Bureau's online documentation (see [here](https://api.census.gov/data.html)), for example. 
+
+However, the tidycensus package has prewritten functions that allow you to easily call information on variables and their associated codes. The function for the decennial census is `load_variables`; later in this tutorial, we'll also explore the analog of this function for the American Community Survey (the `get_acs()` function). 
+
+In the code below, the arguments to the `load_variables` function are "2010", which specifies the year of the decennial census we are interested in, and "sf1", which is short for "summary form 1" ([SF1](https://www.census.gov/data/datasets/2010/dec/summary-file-1.html) is the foundational dataset of the Census Bureau, containing data based on the constitutionally mandated decennial census that collects demographic information from every household in the United States). We assign the output of this code (i.e. a table containing variable information for the 2010 census), to an object called `decennial_variables`, which we can then inspect by using the `View` function. 
+
+
 ```{r view variables}
 decennial_variables<-load_variables(2010,"sf1")
 View(decennial_variables)
@@ -31,12 +39,17 @@ View(decennial_variables)
 kable(head(decennial_variables))
 ```
 
-
-## Calling and Manipulating Data using tidycensus and dplyr: Basics
+If we wanted data from Summary Form 1 from the 2000 census, we could simply replace the "2010" with "2000." To learn more about the `load_variables` function and its different possible arguments, simply type a question mark in front of the function name, i.e. `?load_variables()`. Placing a question mark in front of any function (from a loaded library) will bring up its documentation within the "packages" tab on the bottom right of your RStudio screen. 
 
 ### Calling and Viewing Data
 
-Let's find out the population, by state, in 2010: 
+Let's say that we want to generate a dataset of state-level population based on the 2010 census. We can do so using the `get_decennial()` function in tidycensus. Below, we call this function, and supply several arguments to specify the precise parameters of the data we wish to fetch. By setting the `geography` argument equal to "state", we specify that we want a state-level dataset (as opposed, say, to a county or tract-level dataset). 
+
+The `variables` argument is set equal to "P001001", the census variable code that is associated with the population variable we're interested in (to confirm this, we could double-check the table of variables contained in the `decennial_variables` table created earlier). Because we set the `geometry` parameter equal to "TRUE", the `get_decennial` functional will return an `sf` object that allows us to represent the data spatially on a map; if this argument is set to "FALSE" instead, the function would return a tabular dataset without any corresponding geographic information that would facilitate a spatial analysis or visualization. Following from the the `geometry` argument, the `shift_geo` argument gives us the option of shifting the geometries of the returned `sf` object such that the positions of Hawaii and Alaska are shifted from their actual locations, allowing for a more tightly rendered map; if `shift_geo` is set equal to "TRUE", the geometries are shifted; if it is set to "FALSE", Alaska and Hawaii's geometries are not shifted, and they will be rendered in their actual locations if the sf object is plotted on a map. Here, because we set `geometry=TRUE` and `shift_geo=TRUE`, the `get_decennial` function will return a spatially explicit dataset with geographic coordinate information (that is, an `sf` object), and the geometries of Alaska and Hawaii will be shifted. Later in the tutorial, we'll use this `sf` object to map some of our data.
+
+Finally, we set `year=2010` to specify that we want the decennial census from 2010. 
+
+We will assign the dataset that results from running the `get_decennial` function with these arguments to an object called `state_population_2010`, which we can then view in RStudio with `View(state_population_2010)`. 
 
 ```{r, message=FALSE}
 state_population_2010<-get_decennial(geography = "state", 
@@ -47,13 +60,11 @@ state_population_2010<-get_decennial(geography = "state",
 View(state_population_2010)
 ```
 
-
 ```{r,echo=FALSE}
 kable(head(state_population_2010))
 ```
 
-We can adjust the geography and year parameters; let's say we want the population distribution 
-across Colorado counties in the year 2010, based on the 2010 decennial census:
+We can change the `geography` and `year` arguments as needed; for instance, if we decide that we want to focus more specifically on the population distribution across Colorado counties in the year 2010, we would specify `geography="county"` and `state="CO"`. 
 
 ```{r,message=FALSE}
 CO_county_population_2010<-get_decennial(geography = "county", 
@@ -69,9 +80,15 @@ kable(head(CO_county_population_2010))
 
 ### Cleaning and Manipulating Data Using dplyr
 
-Let's clean up the dataset of Colorado's 2010 population distribution with respect to counties that we just created; we'll remove the "variable" column, and rename the "value" column as "Population". We can perform these operations by calling functions from the "dplyr" package. In the following code, we are editing the `Co_county_population_2010` dataset (note that the changes on the right hand side of the assignment operator are being applied to the `CO_county_population_2010` dataset, and that we're not creating a new object). The first line of code following the assignment operator (the `<-` symbol) calls the `CO_county_population_2010` dataset, and establishes that the subsequent functional operations are being applied to this dataset. After calling the dataset of interest, we use the pipe operator ` %>% `  to indicate that we want the second line of code (beginning with `mutate`) to be applied to the dataset we called in the first line (the pipe operator can be translated into ordinary language as "and then", i.e. "take the 'CO_county_population' dataset and then apply the second line of code to this dataset"). 
+Let's clean up the dataset of Colorado's 2010 population distribution with respect to counties that we just created (`CO_county_population_2010`); we'll remove the "variable" field, and rename the "value" field as "Population". We can perform these operations by calling functions from the "dplyr" package. 
 
-The `mutate` function is a dplyr function that can be used to create new variables in a dataset based on existing variables, as well as delete variables by setting the variable name to "NULL." Here, the variable we want to delete is named "variable", so we call the `mutate` function, and write `variable=NULL` in parentheses to delete the "variable" field in the `CO_county_population_2010` dataset. We then use the `%>%` operator once again to take the dataset that results after deleting the "variable" field, and then use the `rename` function to rename the existing "value" field as "population."
+In the following code, we will edit the `Co_county_population_2010` dataset. The first line of code following the assignment operator (the `<-` symbol) calls the `CO_county_population_2010` dataset, and establishes that the subsequent functional operations are being applied to this dataset. After calling the dataset of interest, we use the pipe operator ` %>% `  to indicate that we want the function on the second line of code (`mutate`) to be applied to the dataset we called in the first line (the pipe operator can be translated into ordinary language as "and then", i.e. "take the 'CO_county_population' dataset and then excise the `variable` field using `mutate(variable=NULL`"). 
+
+More specifically, the `mutate` function is a dplyr function that can be used to create new variables in a dataset based on existing variables, as well as delete variables by setting the variable name to "NULL." Here, the variable we want to delete is named "variable", so we call the `mutate` function, and write `variable=NULL` in parentheses to delete the "variable" field in the `CO_county_population_2010` dataset. We then use the `%>%` operator once again to take the dataset that results after deleting the "variable" field, and then (` %>%`) use the `rename` function to change the field currently named "value" to "population" (that is, `rename(population=value`)). 
+
+An English translation of the code below might read: "Take the `CO_county_population_2010` [Line 1] dataset and then delete the "variable" field [Line 2] and then change the name of the "value" field to "population" [Line 3]." 
+
+We can view the amended dataset using the `View` function; here, `View(CO_county_population_2010)`. 
 
 ```{r, message=FALSE}
 CO_county_population_2010<-CO_county_population_2010 %>% 
@@ -85,7 +102,15 @@ View(CO_county_population_2010)
 kable(head(CO_county_population_2010))
 ```
 
-It's also possible to call multiple variables into a single table. To see this, let's add a field/column containing the rural population in each state in 2010 (as well as the total population in that year), and order the dataset in descending order with respect to the rural population (such that the state with the largest rural population will appear as the first record in the dataset):
+### Calling multiple variables
+
+It's also easy to call multiple variables into a table using a single function call (though calling datasets from multiple time periods is a bit trickier, as we'll see in just a bit). 
+
+To see how we can call multiple variables in a single function call, let's add a new field containing the rural population in each state in 2010 (as well as the total population in that year, as we did before). To do so, we can supply a vector of desired variables to the `variables` argument; in this case, the rural population variable's variable code is "P002005", so to create a dataset with both overall and rural population variables, we specify `variables= c("P001001", "P002005")`. Note that we have also specified `output=wide` as one of the arguments in the `get_decennial()` function; this argument returns a "wide" dataset with separate columns for separate variables, instead of a "long" dataset (the default option) in which multiple variables are stacked on top of each other within a single column. 
+
+After specifying the arguments to the `get_decennial()` function, we use the pipe (`%>%`) to pass the output of the `get_decennial()` function through a few more function calls. First, we take the output of `get_decennial` and rename the variable fields (which by default are returned in fields that take their names from the relevant census variables codes) so that they are more intuitive. Here, we rename the field containing information on the overall population from "P001001" to "total_population" and the field containing information on the rural population from "P002005" to "rural_population." Finally, in the last line of code, we sort the dataset in descending order based on the "rural_population" variable. We assign the dataset that results from these operations to a new object, called `state_pop_ruralpop_2010`. 
+
+In short, we might translate the following code as follows: "   
 
 ```{r,message=FALSE,results=FALSE}
 state_pop_ruralpop_2010<-get_decennial(geography = "state", 
@@ -95,7 +120,7 @@ state_pop_ruralpop_2010<-get_decennial(geography = "state",
                          rename(total_population=P001001, rural_population=P002005) %>% 
                          arrange(desc(rural_population))
 
-state_pop_ruralpop_2010
+View(state_pop_ruralpop_2010)
 
 ```
 
