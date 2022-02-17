@@ -80,8 +80,61 @@ rural_pct_over40<-state_pop_ruralpop_2010 %>%
                     filter(rural_pct>40)
 
 
+#Student Exercise 1: Create a dataset of Colorado counties whose rural population percentage
+# (with respect to the overall county population) exceededs 50% (based on the 2010 decennial
+#census). Sort the dataset in descending order with respect to the rural percentage variable.
 
 
+# Make a graph that visually conveys the median age in Colorado, by county, 
+# based on the 2010 census.
+
+# Extracts Colorado median age dataset
+median_age_CO<- get_decennial(geography = "county",
+                              state="CO",
+                              variables = "P013001", 
+                              geometry=TRUE,
+                              year = 2010) %>% 
+  rename(median_age=value) %>% 
+  mutate(County=str_remove(NAME, " County, Colorado")) %>% 
+  select(-NAME)
+
+
+# Creates ggplot visualization of CO median age
+median_age_CO__visualization<-
+  median_age_CO %>%
+  ggplot(aes(x = median_age, y = reorder(County, median_age))) + 
+  geom_point()+
+  labs(title="Median Age by County, CO", x="Median Age", y="County", caption="Source: United States census accessed via tidycensus")+
+  theme(plot.title=element_text(hjust=0.5),
+        plot.caption=element_text(size=5))
+
+
+median_age_CO__visualization
+
+# Makes map of median age
+
+median_age_CO_map<-
+  tm_shape(median_age_CO)+
+  tm_polygons(col="median_age",
+              breaks=c(30,35,40,45,50),
+              palette="YlGnBu", 
+              midpoint=TRUE)+
+  tm_layout(frame=FALSE, 
+            main.title="Median Age by County,\nColorado",  
+            main.title.position="left", 
+            legend.outside=TRUE,
+            attr.outside=TRUE)+
+  tm_credits("Source: US Census via tidycensus", position=c("right", "bottom"))
+
+median_age_CO_map
+
+tmap_mode("view")
+
+median_age_CO_map
+
+tmap_mode("plot")
+
+median_age_CO_map
 
 
 
