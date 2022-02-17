@@ -1,0 +1,35 @@
+---
+title: "Census Data in R"
+author: "Aditya Ranganath"
+date: "2/17/2022"
+output:
+  html_document:
+        toc: true
+        toc_depth: 3
+        toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preliminaries: Load Libraries
+
+```{r, message=F, results=F, warning=F}
+library(tidycensus)
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+```{r}
+decennial_variables<-load_variables(2010,"sf1")
+```
+
+```{r}
+decennial_variables
+```
+
+
+
+
