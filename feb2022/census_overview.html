@@ -250,12 +250,18 @@ div.tocify {
 <div id="preliminaries-load-libraries" class="section level1">
 <h1>Preliminaries: Load Libraries</h1>
 <pre class="r"><code>library(tidycensus)
-library(tidyverse)</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.0.5</code></pre>
-<pre class="r"><code>library(sf)
+library(tidyverse)
+library(sf)
 library(tmap)</code></pre>
-<pre class="r"><code>decennial_variables&lt;-load_variables(2010,&quot;sf1&quot;)</code></pre>
-<pre class="r"><code>decennial_variables</code></pre>
+</div>
+<div id="census-data-extraction-basics" class="section level1">
+<h1>Census Data Extraction: Basics</h1>
+<div id="extracting-a-table-of-variable-codes" class="section level2">
+<h2>Extracting a table of variable codes</h2>
+<pre class="r"><code># Calls up variable codes from 2010 decennial census and assigns to object named &quot;decennial_variables&quot;
+decennial_variables&lt;-load_variables(2010,&quot;sf1&quot;)</code></pre>
+<pre class="r"><code># Prints contents of &quot;decennial_variables&quot;
+decennial_variables</code></pre>
 <pre><code>## # A tibble: 8,959 × 3
 ##    name    label                                concept         
 ##    &lt;chr&gt;   &lt;chr&gt;                                &lt;chr&gt;           
@@ -270,6 +276,165 @@ library(tmap)</code></pre>
 ##  9 H003002 Total!!Occupied                      OCCUPANCY STATUS
 ## 10 H003003 Total!!Vacant                        OCCUPANCY STATUS
 ## # … with 8,949 more rows</code></pre>
+</div>
+<div id="extracting-data-with-get_decennial" class="section level2">
+<h2>Extracting data with <code>get_decennial</code></h2>
+<div id="example-1" class="section level3">
+<h3>Example 1</h3>
+<pre class="r"><code># Generate a table of population by state, based on the 2010 decennial census
+state_population_2010&lt;-get_decennial(geography = &quot;state&quot;, 
+                                     variables = &quot;P001001&quot;, 
+                                     geometry=TRUE,
+                                     year = 2010)</code></pre>
+<pre class="r"><code># prints &quot;state_population_2010&quot;
+state_population_2010</code></pre>
+<pre><code>## Simple feature collection with 52 features and 4 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -179.1473 ymin: 17.88481 xmax: 179.7785 ymax: 71.35256
+## geographic CRS: NAD83
+## # A tibble: 52 × 5
+##    GEOID NAME           variable    value                               geometry
+##    &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt;       &lt;dbl&gt;                     &lt;MULTIPOLYGON [°]&gt;
+##  1 23    Maine          P001001   1328361 (((-67.61976 44.51975, -67.61541 44.5…
+##  2 25    Massachusetts  P001001   6547629 (((-70.83204 41.6065, -70.82373 41.59…
+##  3 26    Michigan       P001001   9883640 (((-88.68443 48.11578, -88.67563 48.1…
+##  4 30    Montana        P001001    989415 (((-104.0577 44.99743, -104.2501 44.9…
+##  5 32    Nevada         P001001   2700551 (((-114.0506 37.0004, -114.05 36.9577…
+##  6 34    New Jersey     P001001   8791894 (((-75.52684 39.65571, -75.52634 39.6…
+##  7 36    New York       P001001  19378102 (((-71.94356 41.28667, -71.9268 41.29…
+##  8 37    North Carolina P001001   9535483 (((-82.60288 36.03983, -82.60074 36.0…
+##  9 39    Ohio           P001001  11536504 (((-82.81349 41.72347, -82.81049 41.7…
+## 10 42    Pennsylvania   P001001  12702379 (((-75.41504 39.80179, -75.42804 39.8…
+## # … with 42 more rows</code></pre>
+</div>
+<div id="example-2" class="section level3">
+<h3>Example 2</h3>
+<pre class="r"><code># Generate a table of the population distribution across Colorado counties in the year 2010, based on the 2010 decennial census
+
+CO_county_population_2010&lt;-get_decennial(geography = &quot;county&quot;, 
+                                         state=&quot;CO&quot;,
+                                         variables = &quot;P001001&quot;, 
+                                         year = 2010)</code></pre>
+<pre class="r"><code># Prints &quot;CO_county_population_2010&quot;
+CO_county_population_2010</code></pre>
+<pre><code>## # A tibble: 64 × 4
+##    GEOID NAME                      variable  value
+##    &lt;chr&gt; &lt;chr&gt;                     &lt;chr&gt;     &lt;dbl&gt;
+##  1 08023 Costilla County, Colorado P001001    3524
+##  2 08025 Crowley County, Colorado  P001001    5823
+##  3 08027 Custer County, Colorado   P001001    4255
+##  4 08029 Delta County, Colorado    P001001   30952
+##  5 08031 Denver County, Colorado   P001001  600158
+##  6 08035 Douglas County, Colorado  P001001  285465
+##  7 08033 Dolores County, Colorado  P001001    2064
+##  8 08049 Grand County, Colorado    P001001   14843
+##  9 08039 Elbert County, Colorado   P001001   23086
+## 10 08041 El Paso County, Colorado  P001001  622263
+## # … with 54 more rows</code></pre>
+</div>
+</div>
+<div id="cleaning-extracted-data" class="section level2">
+<h2>Cleaning Extracted Data</h2>
+<pre class="r"><code># Clean up the table of CO population by county by removing the &quot;variable&quot; column, and renaming the &quot;value&quot; column as &quot;Population&quot;, which we can do using the tidyverse&#39;s &quot;dplyr&quot; package
+
+CO_county_population_2010&lt;-CO_county_population_2010 %&gt;% 
+                           mutate(variable=NULL) %&gt;% 
+                           rename(population=value)</code></pre>
+<pre class="r"><code># prints updated contents of &quot;CO_county_population_2010&quot;
+CO_county_population_2010</code></pre>
+<pre><code>## # A tibble: 64 × 3
+##    GEOID NAME                      population
+##    &lt;chr&gt; &lt;chr&gt;                          &lt;dbl&gt;
+##  1 08023 Costilla County, Colorado       3524
+##  2 08025 Crowley County, Colorado        5823
+##  3 08027 Custer County, Colorado         4255
+##  4 08029 Delta County, Colorado         30952
+##  5 08031 Denver County, Colorado       600158
+##  6 08035 Douglas County, Colorado      285465
+##  7 08033 Dolores County, Colorado        2064
+##  8 08049 Grand County, Colorado         14843
+##  9 08039 Elbert County, Colorado        23086
+## 10 08041 El Paso County, Colorado      622263
+## # … with 54 more rows</code></pre>
+</div>
+<div id="extracting-multiple-census-variables" class="section level2">
+<h2>Extracting Multiple Census Variables</h2>
+<pre class="r"><code># Create a new object containing a dataset of rural population AND overall population by state,based on the 2010 decennial. Also, renames the variables, and arrange the dataset in descending order with respect to the rural population
+
+state_pop_ruralpop_2010&lt;-get_decennial(geography = &quot;state&quot;, 
+                                       variables = c(&quot;P001001&quot;, &quot;P002005&quot;),
+                                       output=&quot;wide&quot;,
+                                       year = 2010) %&gt;% 
+                          rename(total_population=P001001, rural_population=P002005) %&gt;% 
+                          arrange(desc(rural_population))</code></pre>
+<pre><code>## Getting data from the 2010 decennial Census</code></pre>
+<pre><code>## Using Census Summary File 1</code></pre>
+<pre class="r"><code># prints contents of &quot;state_pop_ruralpop_2010&quot;
+state_pop_ruralpop_2010</code></pre>
+<pre><code>## # A tibble: 52 × 4
+##    GEOID NAME           total_population rural_population
+##    &lt;chr&gt; &lt;chr&gt;                     &lt;dbl&gt;            &lt;dbl&gt;
+##  1 48    Texas                  25145561          3847522
+##  2 37    North Carolina          9535483          3233727
+##  3 42    Pennsylvania           12702379          2711092
+##  4 39    Ohio                   11536504          2546810
+##  5 26    Michigan                9883640          2513683
+##  6 13    Georgia                 9687653          2415502
+##  7 36    New York               19378102          2349997
+##  8 47    Tennessee               6346105          2132860
+##  9 51    Virginia                8001024          1963930
+## 10 01    Alabama                 4779736          1957932
+## # … with 42 more rows</code></pre>
+</div>
+<div id="creating-new-variables" class="section level2">
+<h2>Creating New Variables</h2>
+<pre class="r"><code>#Using dplyr, generate a new variable in the dataset based on existing variables; 
+# in particular, create a variable called &quot;rural_pct&quot; that reflects the rural population 
+# as a percentage of the population, and then arranges it in descrend order
+# with respect to the new &quot;rural_pct&quot; variable
+
+state_pop_ruralpop_2010&lt;- state_pop_ruralpop_2010 %&gt;% 
+                            mutate(rural_pct=(rural_population/total_population)*100) %&gt;% 
+                            arrange(desc(rural_pct))</code></pre>
+<pre class="r"><code># prints &quot;state_pop_ruralpop_2010&quot;
+state_pop_ruralpop_2010</code></pre>
+<pre><code>## # A tibble: 52 × 5
+##    GEOID NAME          total_population rural_population rural_pct
+##    &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;            &lt;dbl&gt;     &lt;dbl&gt;
+##  1 23    Maine                  1328361           814819      61.3
+##  2 50    Vermont                 625741           382356      61.1
+##  3 54    West Virginia          1852994           950184      51.3
+##  4 28    Mississippi            2967297          1503073      50.7
+##  5 30    Montana                 989415           436401      44.1
+##  6 05    Arkansas               2915918          1278329      43.8
+##  7 46    South Dakota            814180           352933      43.3
+##  8 21    Kentucky               4339367          1806024      41.6
+##  9 01    Alabama                4779736          1957932      41.0
+## 10 38    North Dakota            672591           269719      40.1
+## # … with 42 more rows</code></pre>
+</div>
+<div id="filtering-census-datasets" class="section level2">
+<h2>Filtering census datasets</h2>
+<pre class="r"><code># Extracts observations from &quot;state_pop_ruralpop_2010&quot; where rural_pct&gt;40 and assigns to a new object named &quot;rural_pct_over40&quot;
+
+rural_pct_over40&lt;-state_pop_ruralpop_2010 %&gt;%
+                  filter(rural_pct&gt;40)</code></pre>
+<pre class="r"><code>rural_pct_over40</code></pre>
+<pre><code>## # A tibble: 10 × 5
+##    GEOID NAME          total_population rural_population rural_pct
+##    &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;            &lt;dbl&gt;     &lt;dbl&gt;
+##  1 23    Maine                  1328361           814819      61.3
+##  2 50    Vermont                 625741           382356      61.1
+##  3 54    West Virginia          1852994           950184      51.3
+##  4 28    Mississippi            2967297          1503073      50.7
+##  5 30    Montana                 989415           436401      44.1
+##  6 05    Arkansas               2915918          1278329      43.8
+##  7 46    South Dakota            814180           352933      43.3
+##  8 21    Kentucky               4339367          1806024      41.6
+##  9 01    Alabama                4779736          1957932      41.0
+## 10 38    North Dakota            672591           269719      40.1</code></pre>
+</div>
 </div>
 
 

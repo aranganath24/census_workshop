@@ -22,7 +22,6 @@ View(decennial_variables)
 state_population_2010<-get_decennial(geography = "state", 
                                      variables = "P001001", 
                                      geometry=TRUE,
-                                     shift_geo = TRUE,
                                      year = 2010)
 View(state_population_2010)
 
