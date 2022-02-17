@@ -161,7 +161,7 @@ median_age_CO<- get_decennial(geography = "county",
 median_age_CO
 ```
 
-```{r}
+```{r, fig.width=10, fig.height=10}
 # Creates ggplot visualization of CO median age
 median_age_CO__visualization<-
   median_age_CO %>%
@@ -173,7 +173,7 @@ median_age_CO__visualization<-
 ```
 
 
-```{r}
+```{r, fig.width=10, fig.height=10}
 median_age_CO__visualization
 ```
 
@@ -222,6 +222,59 @@ tmap_mode("plot")
 # prints "median_age_CO_map" in "Plot" mode
 median_age_CO_map
 ```
+
+# Extracting American Community Survey data
+
+```{r}
+# Extract 5-year ACS data variable codes for year ending in 2018
+ACS_5_2018<-load_variables(2018,"acs5")
+```
+
+```{r}
+# prints "ACS_5_2018"
+ACS_5_2018
+```
+
+```{r}
+# Uses 2018 ACS to extract median income estimates by county for CO
+median_income_CO_counties_2018<-get_acs(geography="county",
+                                     state="CO",
+                                     variables="B19013_001",
+                                     year=2018) %>% 
+                            rename(median_income=estimate) %>% 
+                            arrange(desc(median_income))
+```
+
+
+```{r}
+median_income_CO_counties_2018
+```
+
+
+# ACS Data Visualization
+
+```{r}
+# Creates point visualization of median income by county with error bars
+median_income_CO_counties_2018_viz<-
+     median_income_CO_counties_2018 %>% 
+        mutate(County_Name=str_remove_all(NAME,"County, Colorado")) %>% 
+          ggplot(aes(x=median_income,y=reorder(County_Name, median_income)))+
+           geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
+           geom_point(color = "blue", size = 3)+
+                      labs(title="Median Income in Colorado, by County (2018)",
+                              y="", x="Median Income Estimate from 5 year ACS\n(Bars indicate margin of error)")+
+                             theme(plot.title=element_text(hjust=0.5))
+```
+
+
+```{r, fig.width=10, fig.height=10}
+# prints "median_income_CO_counties_2018_viz"
+median_income_CO_counties_2018_viz
+```
+
+
+
+
 
 
 

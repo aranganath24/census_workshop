@@ -136,9 +136,34 @@ tmap_mode("plot")
 
 median_age_CO_map
 
+# ACS
+
+ACS_5_2018<-load_variables(2018,"acs5")
+View(ACS_5_2018)
+
+# Extracts CO median income by county
+
+median_income_CO_counties_2018<-get_acs(geography="county",
+                                        state="CO",
+                                        variables="B19013_001",
+                                        year=2018) %>% 
+                              rename(median_income=estimate) %>% 
+                              arrange(desc(median_income))
+
+View(median_income_CO_counties)
 
 
+median_income_CO_counties_2018_viz<-
+  median_income_CO_counties_2018 %>% 
+  mutate(County_Name=str_remove_all(NAME,"County, Colorado")) %>% 
+      ggplot(aes(x=median_income,y=reorder(County_Name, median_income)))+
+      geom_errorbarh(aes(xmin = median_income - moe, xmax = median_income + moe)) +
+      geom_point(color = "blue", size = 3)+
+      labs(title="Median Income in Colorado, by County (2018)",
+           y="", x="Median Income Estimate from 5 year ACS\n(Bars indicate margin of error)")+
+      theme(plot.title=element_text(hjust=0.5))
 
+median_income_CO_counties_2018_viz
 
 
 
