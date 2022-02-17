@@ -79,6 +79,8 @@ View(state_pop_ruralpop_2010)
 rural_pct_over40<-state_pop_ruralpop_2010 %>%
                     filter(rural_pct>40)
 
+View(rural_pct_over40)
+
 
 #Student Exercise 1: Create a dataset of Colorado counties whose rural population percentage
 # (with respect to the overall county population) exceededs 50% (based on the 2010 decennial
@@ -150,7 +152,7 @@ median_income_CO_counties_2018<-get_acs(geography="county",
                               rename(median_income=estimate) %>% 
                               arrange(desc(median_income))
 
-View(median_income_CO_counties)
+View(median_income_CO_counties_2018)
 
 
 median_income_CO_counties_2018_viz<-
@@ -165,10 +167,18 @@ median_income_CO_counties_2018_viz<-
 
 median_income_CO_counties_2018_viz
 
+# challenge answer
 
-
-
-
+rural_pct_over50_CO2010<-get_decennial(geography = "county",
+                                       state="CO",
+                                       variables = c("P001001", "P002005"),
+                                       output="wide",
+                                       year = 2010) %>% 
+                        mutate(variable=NULL) %>% 
+                        rename(total_population=P001001, rural_population=P002005) %>% 
+                        mutate(rural_pct=(rural_population/total_population)*100) %>% 
+                        filter(rural_pct>50) %>% 
+                        arrange(desc(rural_pct))
 
 
 
